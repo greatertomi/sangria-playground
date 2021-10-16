@@ -1,4 +1,7 @@
-import slick.lifted.TableQuery
+import com.google.inject.Inject
+import com.google.inject.name.Named
+
+import scala.concurrent.Future
 
 object Episode extends Enumeration {
   val NEWHOPE, EMPIRE, JEDI = Value
@@ -27,7 +30,9 @@ case class Droid (
                  primaryFunction: Option[String]
                  ) extends Character
 
-class CharacterRepo {
+class CharacterRepo @Inject() (
+  slickSession: SlickSession, tables: Tables
+) {
   import CharacterRepo._
 
   def getHero(episode: Option[Episode.Value]): Character =
@@ -37,8 +42,7 @@ class CharacterRepo {
 
   def getDroid(id: String): Option[Droid] = droids.find(c => c.id == id)
 
-  def getHumans(limit: Int, offset: Int): List[Human] = {
-//    Humans
+  def getHumans(limit: Int, offset: Int): Future[List[Human]] = {
   }
 
   def getDroids(limit: Int, offset: Int): List[Droid] = droids.slice(offset, offset + limit)

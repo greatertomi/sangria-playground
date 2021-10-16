@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "de.heikoseeberger" %% "akka-http-circe" % "1.38.2",
+  "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "3.0.3",
 
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
@@ -30,6 +31,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "42.2.24",
   "org.slf4j" % "slf4j-nop" % "1.7.32",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
+  "com.google.inject" % "guice" % "5.0.1",
 
   "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )
