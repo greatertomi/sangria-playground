@@ -5,15 +5,15 @@ object Episode extends Enumeration {
 trait Character {
   def id: String
   def name: Option[String]
-  def friends: List[String]
-  def appearsIn: List[Episode.Value]
+  def friends: Seq[String]
+  def appearsIn: Seq[Episode.Value]
 }
 
 case class Human (
                  id: String,
                  name: Option[String],
-                 friends: List[String],
-                 appearsIn: List[Episode.Value],
+                 friends: Seq[String],
+                 appearsIn: Seq[Episode.Value],
                  homePlanet: Option[String]
                  ) extends Character
 
@@ -38,10 +38,18 @@ class CharacterRepo {
   def getHumans(limit: Int, offset: Int): List[Human] = humans.slice(offset, offset + limit)
 
   def getDroids(limit: Int, offset: Int): List[Droid] = droids.slice(offset, offset + limit)
+
+  def addHuman(id: String, name: String, friends: Seq[String], appearsIn: Seq[Episode.Value], homePlanet: Option[String]): Human = {
+    val human = Human(id, Some(name), friends, appearsIn, homePlanet)
+    println("adding data to human Human", human)
+    humans = humans :+ human
+    println("new human", humans)
+    human
+  }
 }
 
 object CharacterRepo {
-  val humans = List(
+  var humans = List(
     Human(
       id = "1000",
       name = Some("Luke Skywalker"),

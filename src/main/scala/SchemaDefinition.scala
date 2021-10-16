@@ -101,11 +101,17 @@ object SchemaDefinition {
   val LimitArg: Argument[Int] = Argument("limit", OptionInputType(IntType), defaultValue = 20)
   val OffsetArg: Argument[Int] = Argument("offset", OptionInputType(IntType), defaultValue = 0)
 
+  val NameArg: Argument[String] = Argument("name", StringType,
+    description = "Name of the human")
+  val FriendsArg = Argument("friends", ListInputType(StringType))
+  val AppearsInArg = Argument("appearIns", ListInputType(EpisodeEnum))
+  val HomePlanetArg: Argument[Option[String]] = Argument("homePlanet", OptionInputType(StringType))
+
   val Query: ObjectType[CharacterRepo, Unit] = ObjectType(
     "Query", fields[CharacterRepo, Unit](
       Field("hero", Character,
         arguments = EpisodeArg :: Nil,
-        deprecationReason = Some("Usee `human` or `droid` fields instead"),
+        deprecationReason = Some("Use `human` or `droid` fields instead"),
         resolve = ctx => ctx.ctx.getHero(ctx.arg(EpisodeArg))
       ),
       Field("human", OptionType(Human),
@@ -127,5 +133,14 @@ object SchemaDefinition {
     )
   )
 
-  val StarWarsSchema: Schema[CharacterRepo, Unit] = Schema(Query)
+  val Mutation: ObjectType[CharacterRepo, Unit] = ObjectType(
+    "Mutation", fields[CharacterRepo, Unit](
+      Field("addHuman", Human,
+        arguments = ID :: NameArg :: FriendsArg :: AppearsInArg :: HomePlanetArg :: Nil,
+        resolve = req => req.ctx.addHuman(req.arg(ID), req.arg(NameArg), req.arg(FriendsArg), req.arg(AppearsInArg), req.arg(HomePlanetArg))
+      )
+    )
+  )
+
+  val StarWarsSchema: Schema[CharacterRepo, Unit] = Schema(Query, Some(Mutation))
 }
