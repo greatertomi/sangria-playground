@@ -1,3 +1,5 @@
+import slick.lifted.TableQuery
+
 object Episode extends Enumeration {
   val NEWHOPE, EMPIRE, JEDI = Value
 }
@@ -35,7 +37,9 @@ class CharacterRepo {
 
   def getDroid(id: String): Option[Droid] = droids.find(c => c.id == id)
 
-  def getHumans(limit: Int, offset: Int): List[Human] = humans.slice(offset, offset + limit)
+  def getHumans(limit: Int, offset: Int): List[Human] = {
+//    Humans
+  }
 
   def getDroids(limit: Int, offset: Int): List[Droid] = droids.slice(offset, offset + limit)
 

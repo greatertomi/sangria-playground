@@ -9,6 +9,7 @@ import sangria.execution.deferred.DeferredResolver
 import sangria.http.akka.circe.CirceHttpSupport
 import sangria.slowlog.SlowLog
 import sangria.marshalling.circe._
+import slick.jdbc.H2Profile.api._
 
 import scala.util.{Failure, Success}
 
@@ -48,6 +49,7 @@ object Server extends App with CorsSupport with CirceHttpSupport {
 
   val PORT = sys.props.get("http.port").fold(8080)(_.toInt)
   val INTERFACE = "0.0.0.0"
+  val db = Database.forConfig("postgres")
   println("Server running on port 8080")
   Http().newServerAt(INTERFACE, PORT).bindFlow(corsHandler(route))
 }
