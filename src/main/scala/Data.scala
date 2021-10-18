@@ -1,5 +1,5 @@
+import akka.stream.alpakka.slick.scaladsl.SlickSession
 import com.google.inject.Inject
-import com.google.inject.name.Named
 
 import scala.concurrent.Future
 
@@ -34,6 +34,8 @@ class CharacterRepo @Inject() (
   slickSession: SlickSession, tables: Tables
 ) {
   import CharacterRepo._
+  import slick.jdbc.PostgresProfile.api._
+  import tables._
 
   def getHero(episode: Option[Episode.Value]): Character =
     episode flatMap(_ => getHuman("1000")) getOrElse droids.last
@@ -42,7 +44,8 @@ class CharacterRepo @Inject() (
 
   def getDroid(id: String): Option[Droid] = droids.find(c => c.id == id)
 
-  def getHumans(limit: Int, offset: Int): Future[List[Human]] = {
+  def getHumans(limit: Int, offset: Int): Future[Seq[(String, String, String, String, String)]] = slickSession.db run {
+    Humans.result
   }
 
   def getDroids(limit: Int, offset: Int): List[Droid] = droids.slice(offset, offset + limit)
