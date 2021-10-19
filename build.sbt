@@ -33,5 +33,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
   "com.google.inject" % "guice" % "5.0.1",
 
+  "com.github.tminglei" %% "slick-pg" % "0.19.7",
+  "com.github.tminglei" %% "slick-pg_circe-json" % "0.19.7",
+  "com.github.tminglei" %% "slick-pg_joda-time" % "0.19.7",
+
   "org.scalatest" %% "scalatest" % "3.2.9" % Test
 )

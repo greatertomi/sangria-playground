@@ -8,16 +8,6 @@ object SchemaDefinition {
     (ctx: CharacterRepo, ids: Seq[String]) =>
       Future.successful(ids.flatMap(id => ctx.getHuman(id) orElse ctx.getDroid(id))))(HasId(_.id))
 
-  val EpisodeEnum: EnumType[Episode.Value] = EnumType(
-    "Episode",
-    Some("One of the films in the Star Wars Trilogy"),
-    List(
-      EnumValue("NEWHOPE", value = Episode.NEWHOPE, description = Some("Released in 1977")),
-      EnumValue("EMPIRE", value = Episode.EMPIRE, description = Some("Released in 1980")),
-      EnumValue("JEDI", value = Episode.JEDI, description = Some("Released in 1983"))
-    )
-  )
-
   val Character: InterfaceType[CharacterRepo, Character] =
     InterfaceType(
       "Character",
@@ -31,13 +21,13 @@ object SchemaDefinition {
           Some("The name of the character"),
           resolve = _.value.name
         ),
-        Field("friends", ListType(Character),
+        Field("friends", StringType,
           Some("The friends of the character, or an empty list if they have none"),
-          resolve = ctx => characters.deferSeqOpt(ctx.value.friends)
+          resolve = _.value.friends
         ),
-        Field("appearsIn", OptionType(ListType(OptionType(EpisodeEnum))),
+        Field("appearsIn", StringType,
           Some("Which movies they appear in."),
-          resolve = _.value.appearsIn map (e => Some(e))
+          resolve = _.value.appearsIn
         )
       )
     )
@@ -56,13 +46,13 @@ object SchemaDefinition {
           Some("The name of the human"),
           resolve = _.value.name
         ),
-        Field("friends", ListType(Character),
+        Field("friends", StringType,
           Some("The friends of the human, or an empty list if they have none"),
-          resolve = ctx => characters.deferSeqOpt(ctx.value.friends)
+          resolve = _.value.friends
         ),
-        Field("appearsIn", OptionType(ListType(OptionType(EpisodeEnum))),
+        Field("appearsIn", StringType,
           Some("Which movies they appear in."),
-          resolve = _.value.appearsIn map (e => Some(e))
+          resolve = _.value.appearsIn
         ),
         Field("homePlanet", OptionType(StringType),
           Some("The home planet of the human, or null if unknown"),
@@ -81,13 +71,13 @@ object SchemaDefinition {
         resolve = _.value.id),
       Field("name", OptionType(StringType),
         Some("The name of the droid."),
-        resolve = ctx => Future.successful(ctx.value.name)),
-      Field("friends", ListType(Character),
+        resolve = _.value.name),
+      Field("friends", StringType,
         Some("The friends of the droid, or an empty list if they have none."),
-        resolve = ctx => characters.deferSeqOpt(ctx.value.friends)),
-      Field("appearsIn", OptionType(ListType(OptionType(EpisodeEnum))),
+        resolve = _.value.friends),
+      Field("appearsIn", StringType,
         Some("Which movies they appear in."),
-        resolve = _.value.appearsIn map (e => Some(e))),
+        resolve = _.value.appearsIn),
       Field("primaryFunction", OptionType(StringType),
         Some("The primary function of the droid."),
         resolve = _.value.primaryFunction)
@@ -95,7 +85,7 @@ object SchemaDefinition {
 
   val ID: Argument[String] = Argument("id", StringType, description = "id of the character")
 
-  val EpisodeArg: Argument[Option[Episode.Value]] = Argument("episode", OptionInputType(EpisodeEnum),
+  val EpisodeArg = Argument("episode", StringType,
     description = "If omitted, returns the heri of the whole saga. If provided, returns the hero of that particular episode.")
 
   val LimitArg: Argument[Int] = Argument("limit", OptionInputType(IntType), defaultValue = 20)
@@ -103,16 +93,16 @@ object SchemaDefinition {
 
   val NameArg: Argument[String] = Argument("name", StringType,
     description = "Name of the human")
-  val FriendsArg = Argument("friends", ListInputType(StringType))
-  val AppearsInArg = Argument("appearIns", ListInputType(EpisodeEnum))
+  val FriendsArg = Argument("friends", StringType)
+  val AppearsInArg = Argument("appearIns", StringType)
   val HomePlanetArg: Argument[Option[String]] = Argument("homePlanet", OptionInputType(StringType))
 
   val Query: ObjectType[CharacterRepo, Unit] = ObjectType(
     "Query", fields[CharacterRepo, Unit](
-      Field("hero", Character,
+      Field("hero", OptionType(Character),
         arguments = EpisodeArg :: Nil,
         deprecationReason = Some("Use `human` or `droid` fields instead"),
-        resolve = ctx => ctx.ctx.getHero(ctx.arg(EpisodeArg))
+        resolve = ctx => ctx.ctx.getHero(ctx arg EpisodeArg)
       ),
       Field("human", OptionType(Human),
         arguments = ID :: Nil,
