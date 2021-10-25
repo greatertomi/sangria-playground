@@ -11,7 +11,6 @@ import sangria.http.akka.circe.CirceHttpSupport
 import sangria.slowlog.SlowLog
 import sangria.marshalling.circe._
 import slick.basic.DatabaseConfig
-import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
